@@ -106,9 +106,6 @@
 
 #define INITIAL_CSEQ              101    /*!< Our initial sip sequence number */
 
-/* RT-200NE HACK */
-#define MAX_RT200NE                   4       /* Number of RT-200NEs */
-
 #define DEFAULT_MAX_SE            1800   /*!< Session-Timer Default Session-Expires period (RFC 4028) */
 #define DEFAULT_MIN_SE            90     /*!< Session-Timer Default Min-SE period (RFC 4028) */
 

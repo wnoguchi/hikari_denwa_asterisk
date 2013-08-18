@@ -66,9 +66,9 @@
 *.makeopts
 *.moduleinfo
 *.o.d
-*.exports
+#*.exports
 #*.unsigned
-*.mak
+#*.mak
 *.a
 
 # 多分要らない
