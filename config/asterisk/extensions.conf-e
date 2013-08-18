@@ -1,0 +1,125 @@
+[general]
+static=yes
+writeprotect=no
+
+[globals]
+SPEAKINGCLOCK=317
+ECHOTEST=333
+;MYNUMBER=0930000001
+MYNUMBER=0294111111
+EXCHANGENUM=999
+
+[default]
+; Ring 201-205 phones
+;exten => 200,1,Dial(SIP/201&SIP/202&SIP/203&SIP/204&SIP/205)
+;exten => 200,n,Hangup
+; (093-000-0001) Fax in and Ring 201-205 phones
+exten => 200,1,Ringing
+exten => 200,n,Wait(3)
+exten => 200,n,Answer()
+;exten => 200,n,Wait(2)
+;exten => 200,n,Playback(fax)
+exten => 200,n,Ringing
+exten => 200,n,WaitExten(5)
+exten => 200,n,Dial(SIP/Lync_Trunk/2001&IAX2/201&IAX2/202&IAX2/203&IAX2/204&IAX2/205&SIP/201&SIP/202&SIP/203&SIP/204&SIP/205,30,tT)
+exten => 200,n,GotoIf($["${DIALSTATUS}"="BUSY"]?busy)
+exten => 200,n,GotoIf($["${DIALSTATUS}"="NOANSWER"]?unavail)
+exten => 200,n,GotoIf($["${DIALSTATUS}"="CONGESTION"]?unavail)
+exten => 200,n,GotoIf($["${DIALSTATUS}"="CHANUVAIL"]?unavail)
+exten => 200,n,Voicemail(222)
+exten => 200,n,Hangup
+
+; sip client 201 - 205 unavail
+exten => 200,n(unavail),Voicemail(222)
+exten => 200,n,Hangup
+; busy tone
+exten => 200,n(busy),busy()
+
+; fax-in
+exten => fax,1,Dial(IAX2/iaxmodem)
+exten => fax,n,Hangup
+
+; Local SIP/IAX phones 201-209
+exten => _20Z,1,GotoIf($["${USEVOICEMAIL}"="YES"]?use-vm)
+exten => _20Z,n,Dial(SIP/${EXTEN}&IAX2/${EXTEN},,tT)
+exten => _20Z,n,Hangup
+exten => _20Z,n(use-vm),Dial(SIP/${EXTEN}&IAX2/${EXTEN},30,tT)
+exten => _20Z,n,NoOp(${DIALSTATUS})
+exten => _20Z,n,GotoIf($["${DIALSTATUS}"="BUSY"]?vm-rec)
+exten => _20Z,n,GotoIf($["${DIALSTATUS}"="NOANSWER"]?vm-rec)
+exten => _20Z,n,GotoIf($["${DIALSTATUS}"="CHANUNAVAIL"]?vm-rec)
+exten => _20Z,n,Hangup
+exten => _20Z,n(vm-rec),Answer()
+exten => _20Z,n,Wait(1)
+exten => _20Z,n,Voicemail(${EXTEN})
+exten => _20Z,n,Hangup
+
+; For Voicemail Recording
+exten => _20Z*1,1,Answer()
+exten => _20Z*1,n,Wait(1)
+exten => _20Z*1,n,Voicemail(${EXTEN:0:3})
+exten => _20Z*1,n,Hangup
+
+; For Voicemail Playback
+exten => 298,1,Answer()
+exten => 298,n,Wait(1)
+exten => 298,n,VoicemailMain()
+exten => 298,n,Hangup
+exten => 299,1,Answer()
+exten => 299,n,Wait(1)
+exten => 299,n,VoicemailMain(${CALLERID(num)},s)
+exten => 299,n,Hangup
+
+; Speaking Clock
+exten => ${SPEAKINGCLOCK},1,Answer()
+exten => ${SPEAKINGCLOCK},n,Wait(1)
+exten => ${SPEAKINGCLOCK},n,Set(FutureTime=$[${EPOCH} + 5])
+exten => ${SPEAKINGCLOCK},n,SayUnixTime(${FutureTime},Japan,YbdAPHM)
+exten => ${SPEAKINGCLOCK},n,Playback(jp-desu)
+exten => ${SPEAKINGCLOCK},n,playback(beep)
+exten => ${SPEAKINGCLOCK},n,Hangup
+
+; Echo Test
+exten => ${ECHOTEST},1,Answer
+exten => ${ECHOTEST},n,Wait(1)
+exten => ${ECHOTEST},n,Playback(demo-echotest)
+exten => ${ECHOTEST},n,Playback(beep)
+exten => ${ECHOTEST},n,Echo
+exten => ${ECHOTEST},n,Playback(demo-echodone)
+exten => ${ECHOTEST},n,Playback(vm-goodbye)
+
+;Exchange UM
+exten => ${EXCHANGENUM},1,Answer
+exten => ${EXCHANGENUM},n,Dial(SIP/Exchange/${EXTEN})
+exten => ${EXCHANGENUM},n,Busy
+
+;Lync
+;dialling other extensions starting with 2 followed by three digits
+exten=>_2XXX,1,Dial(SIP/Lync_Trunk/${EXTEN},20)
+exten=>_2XXX,n,hangup()
+
+;External Call
+exten => _[01].,1,Set(CALLERID(num)=${MYNUMBER})
+exten => _[01].,n,Set(CALLERID(name)=${MYNUMBER})
+;exten => _[01].,n,Dial(SIP/${EXTEN}:0015:0015@192.168.1.2,120,T)
+exten => _[01].,n,Dial(SIP/${EXTEN}@192.168.0.1,120,T)
+exten => _Z,1,Dial(SIP/${EXTEN}:0015:0015@192.168.0.1,244,T)
+
+[fax-out]
+exten => _X.,1,Set(CALLERID(num)=${MYNUMBER})
+exten => _X.,n,Set(CALLERID(name)=${MYNUMBER})
+exten => _0.,n,Dial(SIP/${EXTEN}@192.168.0.1,300,T)
+exten => _X.,n,Hangup
+
+;[faxt38-out]
+;exten => _X.,1,Set(CALLERID(num)=${MYNUMBER})
+;exten => _X.,n,Set(CALLERID(name)=${MYNUMBER})
+;exten => _0.,n,Dial(IAX2/iaxmodem)
+;;exten => _0.,n,Dial(SIP/${EXTEN}@192.168.255.2,300,T)
+;exten => _X.,n,Hangup
+
+;[from-lync]
+;dialling other extensions starting with 1 followed by three digits
+;exten=>_20Z,1,Dial(SIP/${EXTEN}&IAX2/${EXTEN},20)
+;exten=>_20Z,n,hangup()
+

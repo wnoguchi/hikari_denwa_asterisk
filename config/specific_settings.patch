@@ -1,0 +1,64 @@
+diff --git a/config/asterisk/extensions.conf b/config/asterisk/extensions.conf
+index ad34253..41eac6a 100644
+--- a/config/asterisk/extensions.conf
++++ b/config/asterisk/extensions.conf
+@@ -6,7 +6,7 @@ writeprotect=no
+ SPEAKINGCLOCK=317
+ ECHOTEST=333
+ ;MYNUMBER=0930000001
+-MYNUMBER=0294111111
++MYNUMBER=0294999999
+ EXCHANGENUM=999
+ 
+ [default]
+@@ -103,7 +103,7 @@ exten => _[01].,1,Set(CALLERID(num)=${MYNUMBER})
+ exten => _[01].,n,Set(CALLERID(name)=${MYNUMBER})
+ ;exten => _[01].,n,Dial(SIP/${EXTEN}:0015:0015@192.168.1.2,120,T)
+ exten => _[01].,n,Dial(SIP/${EXTEN}@192.168.1.1,120,T)
+-exten => _Z,1,Dial(SIP/${EXTEN}:0015:0015@192.168.1.1,244,T)
++exten => _Z,1,Dial(SIP/${EXTEN}:PuZeeefE:0003@192.168.1.1,244,T)
+ 
+ [fax-out]
+ exten => _X.,1,Set(CALLERID(num)=${MYNUMBER})
+diff --git a/config/asterisk/sip.conf b/config/asterisk/sip.conf
+index 37b7cbf..9bb3152 100644
+--- a/config/asterisk/sip.conf
++++ b/config/asterisk/sip.conf
+@@ -22,15 +22,15 @@ promiscredir=yes
+ 
+ ;HIKARI ROUTER
+ ;RT-S300HI
+-rt200ne=192.168.0.1
+-register => 55:0055:0055@192.168.1.1/200
++rt200ne=192.168.1.1
++register => 3:PuZeeefE:0003@192.168.1.1/200
+ 
+ [192.168.1.1]
+ type=friend
+-secret=0055
++secret=PuZeeefE
+ Port=5060
+-username=0055
+-fromuser=55
++username=0003
++fromuser=3
+ host=192.168.1.1
+ context=default
+ insecure=port,invite
+@@ -87,14 +87,14 @@ mailbox=205
+ 
+ [Exchange]
+ type=peer
+-host=192.168.1.244
++host=192.168.1.6
+ qualify=yes
+ transport=tcp
+ 
+ [Lync_Trunk]
+ type=friend
+ port=5068
+-host=192.168.1.244
++host=192.168.1.6
+ dtmfmode=rfc2833
+ ;context=from-lync
+ qualify=yes
