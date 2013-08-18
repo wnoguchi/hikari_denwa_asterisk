@@ -81,5 +81,6 @@ ln -s /usr/src/asterisk/src/config/iaxmodem /etc/iaxmodem
 ```
 wget http://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-11.0.1.tar.gz
 wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
-wget http://downloads.asterisk.org/pub/telephony/libpri/libpri-1.4.13.tar.gz
+wget http://downloads.asterisk.org/pub/telephony/libpri/releases/libpri-1.4.13.tar.gz
+wget http://ftp.voip-info.jp/asterisk/sounds/1_8/asterisk-sounds-1.8-ja.tar.gz
 ```
