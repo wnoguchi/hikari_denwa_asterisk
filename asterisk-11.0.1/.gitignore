@@ -66,7 +66,7 @@
 *.makeopts
 *.moduleinfo
 *.o.d
-#*.exports
+/**/*.exports
 #*.unsigned
 #*.mak
 *.a
