@@ -8,13 +8,16 @@
 
 ### 構成
 
-- HGW: `192.168.1.1/24`
+- ひかり電話ホームゲートウェイ(HGW)  
+RT-S300HI: `192.168.1.1/24`
 - Asterisk: `192.168.1.6/24`
 - CentOS6.4 x64
 - IP電話機2台
 
 CentOSの中にAsteriskを入れます。  
 CentOSはVMwareで仮想化しています。
+
+
 
 ### 事前準備
 
@@ -34,13 +37,10 @@ yum -y install kernel-devel bison openssl-devel mysql mysql-server mysql-devel \
 
 ### ソースのチェックアウト
 
-今のところはdevelopブランチでしかソースを提供してない。
-
 ```
 cd /usr/src
-git clone git@github.com:wnoguchi/my_asterisk.git asterisk
+git clone git@github.com:wnoguchi/hikari_denwa_asterisk.git asterisk
 cd asterisk
-git checkout feature/develop
 ```
 
 ### 各種パッケージのビルド・インストール
@@ -273,7 +273,8 @@ cd /usr/src/asterisk/asterisk-11.0.1 && make && make install
 Asteriskの設定ファイルは死ぬほど複雑なのでdiffとったらかなり大変。  
 なので、さっきチェックアウトしてきた `config` ディレクトリに設定済みのデータを入れたのでそれに張り替える。  
 この設定でとりあえず動くっぽい設定になってます。
-`resources/sounds/` と `resources/moh/` はサウンドファイル。
+`resources/sounds/` と `resources/moh/` はサウンドファイル。  
+バージョン管理しやすいようにシンボリックリンクで対応しています。
 
 ```
 mkdir -p /root/asterisk-backup
@@ -296,10 +297,12 @@ ln -s /usr/src/asterisk/resources/sounds/ja /var/lib/asterisk/sounds/ja
 
 ```
 mv /var/lib/asterisk/moh /root/asterisk-backup
-ln -s /usr/src/asterisk/src/resources/moh/ /var/lib/asterisk/moh
+ln -s /usr/src/asterisk/resources/moh /var/lib/asterisk/moh
 ```
 
-ここまででとりあえず正常にAsteriskが起動することを確認してみる。
+ここまででとりあえず正常にAsteriskが起動することを確認してみる。  
+Asteriskを立ち上げている場合は必ず再起動してください。  
+そうしないとシンボリックリンクとかでリンクを張り替えているので保留音等がちゃんと読み込まれません。
 
 ```
 [root@asterisk asterisk]# service asterisk restart
@@ -509,3 +512,13 @@ core restart now
 - [パナソニック電話機対応 - VOIP-Info.jp Wiki](http://www.voip-info.jp/index.php/%E3%83%91%E3%83%8A%E3%82%BD%E3%83%8B%E3%83%83%E3%82%AF%E9%9B%BB%E8%A9%B1%E6%A9%9F%E5%AF%BE%E5%BF%9C)
 - [Amazon.co.jp： パナソニック SIP電話機 KX-UT123N: パソコン・周辺機器](http://www.amazon.co.jp/%E3%83%91%E3%83%8A%E3%82%BD%E3%83%8B%E3%83%83%E3%82%AF-KX-UT123N-SIP%E9%9B%BB%E8%A9%B1%E6%A9%9F/dp/B0065CRXRU)
 - [KX-UT136N | 商品一覧 | SIP電話機 | Panasonic](http://panasonic.biz/netsys/sipphone/products/ut136n/)
+
+SIP電話機の取説。
+
+- [ダウンロード | お客様サポート | SIP電話機 | Panasonic](http://panasonic.biz/netsys/sipphone/support/download/)
+
+### その他
+
+#### Asterisk参考書
+
+- [Amazon.co.jp： Asterisk運用・開発ガイド: アイウィーヴ, マッキーソフト, エムトゥエックス: 本](http://www.amazon.co.jp/Asterisk%E9%81%8B%E7%94%A8%E3%83%BB%E9%96%8B%E7%99%BA%E3%82%AC%E3%82%A4%E3%83%89-%E3%82%A2%E3%82%A4%E3%82%A6%E3%82%A3%E3%83%BC%E3%83%B4/dp/4274066835/ref=sr_1_1?ie=UTF8&qid=1376821816&sr=8-1&keywords=asterisk)
